@@ -32,22 +32,24 @@ class LoginPage extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.15,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextField(
-                    decoration: const InputDecoration(
-                        hintText: 'Email', prefixIcon: Icon(Icons.email)),
-                    controller: _emailEditingController.value,
-                  ),
-                  TextField(
-                    decoration: const InputDecoration(
-                        hintText: 'Password', prefixIcon: Icon(Icons.lock)),
-                    controller: _passwordEditingController.value,
-                  )
-                ],
+            Obx(
+              () => SizedBox(
+                height: MediaQuery.of(context).size.height * 0.15,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextField(
+                      decoration: const InputDecoration(
+                          hintText: 'Email', prefixIcon: Icon(Icons.email)),
+                      controller: _emailEditingController.value,
+                    ),
+                    TextField(
+                      decoration: const InputDecoration(
+                          hintText: 'Password', prefixIcon: Icon(Icons.lock)),
+                      controller: _passwordEditingController.value,
+                    )
+                  ],
+                ),
               ),
             ),
             Row(
@@ -121,10 +123,8 @@ class LoginPage extends StatelessWidget {
               children: [
                 const Text('New to FYI ?'),
                 TextButton(
-                    onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const SignUpPage())),
+                    onPressed: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => SignUpPage())),
                     child: const Text('\tRegister'))
               ],
             )

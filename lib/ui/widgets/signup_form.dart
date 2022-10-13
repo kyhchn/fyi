@@ -3,39 +3,49 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class SignUpForm extends StatelessWidget {
-  SignUpForm({super.key});
-  final _nameEditingController = TextEditingController().obs;
-  final _emailEditingController = TextEditingController().obs;
-  final _passwordEditingController = TextEditingController().obs;
+  Rx<TextEditingController> nameEditingController;
+  Rx<TextEditingController> emailEditingController;
+  Rx<TextEditingController> passwordEditingController;
+  bool isStartup;
+  SignUpForm(
+      {super.key,
+      required this.emailEditingController,
+      required this.nameEditingController,
+      required this.passwordEditingController,
+      required this.isStartup});
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.25,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          TextField(
-            decoration: const InputDecoration(
-                hintText: 'Email', prefixIcon: Icon(Icons.person_outlined)),
-            controller: _nameEditingController.value,
-          ),
-          TextField(
-            decoration: InputDecoration(
-                hintText: 'Password',
-                prefixIcon: SvgPicture.asset(
-                  'assets/svg/@icon.svg',
-                  fit: BoxFit.scaleDown,
-                  height: 10,
-                  width: 10,
-                )),
-            controller: _emailEditingController.value,
-          ),
-          TextField(
-            decoration: const InputDecoration(
-                hintText: 'Password', prefixIcon: Icon(Icons.lock)),
-            controller: _passwordEditingController.value,
-          )
-        ],
+      child: Obx(
+        () => Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            TextField(
+              decoration: InputDecoration(
+                  hintText: isStartup ? 'Startup Name' : 'Your name / Company',
+                  prefixIcon: const Icon(Icons.person_outlined)),
+              controller: nameEditingController.value,
+            ),
+            TextField(
+              decoration: InputDecoration(
+                  hintText: 'Email',
+                  prefixIcon: SvgPicture.asset(
+                    'assets/svg/@icon.svg',
+                    fit: BoxFit.scaleDown,
+                    height: 10,
+                    width: 10,
+                  )),
+              controller: emailEditingController.value,
+            ),
+            TextField(
+              decoration: const InputDecoration(
+                  hintText: 'Password', prefixIcon: Icon(Icons.lock)),
+              controller: passwordEditingController.value,
+            )
+          ],
+        ),
       ),
     );
   }

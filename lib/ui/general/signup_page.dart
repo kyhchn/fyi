@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:fyi/custom_color.dart';
+import 'package:fyi/ui/investor/verification_page.dart';
 import 'package:fyi/ui/startup/funding_page.dart';
 import 'package:fyi/ui/widgets/signup_form.dart';
 import 'package:get/get.dart';
 
 class SignUpPage extends StatelessWidget {
-  const SignUpPage({super.key});
-  final isStartup = false;
+  SignUpPage({super.key});
+  final isStartup = false.obs;
+  final _nameEditingController = TextEditingController().obs;
+  final _emailEditingController = TextEditingController().obs;
+  final _passwordEditingController = TextEditingController().obs;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,37 +36,44 @@ class SignUpPage extends StatelessWidget {
                 ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.4,
-                  child: Row(
-                    children: [
-                      TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            'Investor',
-                            style: TextStyle(
-                                fontSize: 15,
-                                color: isStartup
-                                    ? CustomColor.grey
-                                    : CustomColor.lightBlue),
-                          )),
-                      const Text('/'),
-                      Obx(
-                        () => TextButton(
-                            onPressed: () {},
+                  child: Obx(
+                    () => Row(
+                      children: [
+                        TextButton(
+                            onPressed: () => isStartup.value = false,
+                            child: Text(
+                              'Investor',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: isStartup.value
+                                      ? CustomColor.grey
+                                      : CustomColor.lightBlue),
+                            )),
+                        const Text('/'),
+                        TextButton(
+                            onPressed: () => isStartup.value = true,
                             child: Text(
                               'Startup',
                               style: TextStyle(
                                   fontSize: 15,
-                                  color: isStartup
+                                  color: isStartup.value
                                       ? CustomColor.lightBlue
                                       : CustomColor.grey),
                             )),
-                      )
-                    ],
+                      ],
+                    ),
                   ),
                 )
               ],
             ),
-            SignUpForm(),
+            Obx(
+              () => SignUpForm(
+                isStartup: isStartup.value,
+                emailEditingController: _emailEditingController,
+                passwordEditingController: _passwordEditingController,
+                nameEditingController: _nameEditingController,
+              ),
+            ),
             RichText(
                 text: TextSpan(
                     text: 'By Sign Up , you\'re agree with our ',
@@ -80,20 +92,24 @@ class SignUpPage extends StatelessWidget {
                       style: TextStyle(color: CustomColor.lightBlue)),
                 ])),
             SizedBox(
-                width: double.infinity,
-                height: 40,
-                child: ElevatedButton(
-                    style: ButtonStyle(
-                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15)))),
-                    onPressed: () => Navigator.pushAndRemoveUntil(
+              width: double.infinity,
+              height: 40,
+              child: ElevatedButton(
+                  style: ButtonStyle(
+                      shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)))),
+                  onPressed: () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => FundingPage()),
-                        (route) => false),
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(color: Colors.white),
-                    ))),
+                        MaterialPageRoute(
+                            builder: (context) => isStartup.value
+                                ? FundingPage()
+                                : const VerificationPage()),
+                      ),
+                  child: const Text(
+                    'Sign Up',
+                    style: TextStyle(color: Colors.white),
+                  )),
+            ),
           ],
         ),
       )),
