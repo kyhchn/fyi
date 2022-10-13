@@ -103,7 +103,7 @@ class SignUpPage extends StatelessWidget {
                         MaterialPageRoute(
                             builder: (context) => isStartup.value
                                 ? FundingPage()
-                                : const VerificationPage()),
+                                : VerificationPage()),
                       ),
                   child: const Text(
                     'Sign Up',

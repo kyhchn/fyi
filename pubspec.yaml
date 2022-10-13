@@ -44,6 +44,7 @@ dependencies:
   get_storage: ^2.0.3
   file_picker: ^5.2.1
   open_filex: ^4.1.1
+  custom_navigation_bar: ^0.8.2
 
 dev_dependencies:
   flutter_test:

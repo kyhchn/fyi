@@ -12,7 +12,7 @@ class FilePickerWidget extends StatelessWidget {
   String nameFile;
   FilePickerWidget({super.key, required this.nameFile});
   var isPicked = false.obs;
-  late File file;
+  File? file = null;
   @override
   Widget build(BuildContext context) {
     return Row(

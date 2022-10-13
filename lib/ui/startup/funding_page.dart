@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fyi/commons.dart';
 import 'package:fyi/custom_color.dart';
 import 'package:fyi/ui/widgets/file_picker_widget.dart';
+import 'package:fyi/ui/general/validation_pending_page.dart';
 import 'package:get/get.dart';
 
 class FundingPage extends StatelessWidget {
@@ -169,13 +170,19 @@ class FundingPage extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   if (isValid()) {
-                    print('berhasil lur');
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ValidationPendingPage(
+                                text:
+                                    'Your application is on review, Please check again after 48 hours to pitching with our teams.')),
+                        (route) => false);
                     return;
                   }
                   print('jancok ono seng kurang tod');
                 },
                 child: Text(
-                  'kontol',
+                  'Apply',
                   style: TextStyle(color: Colors.white),
                 ),
                 style: Commons.blueButtonStyle,
