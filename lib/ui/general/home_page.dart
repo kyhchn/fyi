@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
-  var _index = 0.obs;
+  final _index = 0.obs;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
