@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fyi/custom_color.dart';
+import 'package:fyi/ui/general/notification_page.dart';
 import 'package:fyi/ui/general/widgets/catalog_card.dart';
 
 class DashBoard extends StatelessWidget {
@@ -53,7 +54,12 @@ class DashBoard extends StatelessWidget {
                     ],
                   ),
                 ),
-                SvgPicture.asset('assets/svg/newNotificationIcon.svg')
+                IconButton(
+                  icon: SvgPicture.asset('assets/svg/newNotificationIcon.svg'),
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => NotificationPage(),
+                  )),
+                )
               ],
             ),
           ),

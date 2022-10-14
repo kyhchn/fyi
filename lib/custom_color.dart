@@ -7,6 +7,8 @@ class CustomColor {
   static MaterialColor lightGrey = MaterialColor(0xFFF9F9F9, color);
   static MaterialColor pink = MaterialColor(0xFFECC5FB, color);
   static MaterialColor lightYellow = MaterialColor(0xFFFAF4B7, color);
+  static MaterialColor darkerLightGrey = MaterialColor(0xFFD9D9D9, color);
+  static MaterialColor lighterLightBlue = MaterialColor(0xFF48CAE4, color);
 }
 
 Map<int, Color> color = const {

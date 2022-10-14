@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fyi/custom_color.dart';
+import 'package:fyi/ui/general/home_page.dart';
 import 'package:fyi/ui/general/signup_page.dart';
 import 'package:get/get.dart';
 
@@ -70,7 +71,11 @@ class LoginPage extends StatelessWidget {
                     style: ButtonStyle(
                         shape: MaterialStateProperty.all(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15)))),
-                    onPressed: () {},
+                    onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (context) => HomePage(),
+                        ),
+                        (route) => false),
                     child: const Text(
                       'Login',
                       style: TextStyle(color: Colors.white),

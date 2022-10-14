@@ -14,16 +14,6 @@ class CataloguePage extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
           width: double.infinity,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Categories',
-                style: TextStyle(color: CustomColor.lightBlue, fontSize: 25),
-              ),
-            ],
-          ),
           height: size.height * 0.1,
           decoration: BoxDecoration(
               boxShadow: [
@@ -38,36 +28,111 @@ class CataloguePage extends StatelessWidget {
               borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(15),
                   bottomRight: Radius.circular(15))),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Categories',
+                style: TextStyle(color: CustomColor.lightBlue, fontSize: 25),
+              ),
+            ],
+          ),
         ),
-        Container(
+        SizedBox(
+          width: double.infinity,
+          height: size.height * 0.12,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               CategoryItem(
                 color: CustomColor.toscaBlue,
-                icon: Icons.abc,
-                text: 'halooo',
+                icon: const ImageIcon(
+                  AssetImage('assets/icons/computerIcon.png'),
+                  color: Colors.blue,
+                ),
+                text: 'Technology',
               ),
               CategoryItem(
                 color: CustomColor.lightGrey,
-                icon: Icons.abc,
-                text: 'halooo',
+                icon: const ImageIcon(AssetImage('assets/icons/dollarIcon.png'),
+                    color: Colors.blue),
+                text: 'Finance',
               ),
               CategoryItem(
                 color: CustomColor.pink,
-                icon: Icons.abc,
-                text: 'halooo',
+                icon: const ImageIcon(AssetImage('assets/icons/healthIcon.png'),
+                    color: Colors.blue),
+                text: 'Health',
               ),
               CategoryItem(
                 color: CustomColor.lightYellow,
-                icon: Icons.abc,
-                text: 'halooo',
+                icon: const ImageIcon(
+                  AssetImage('assets/icons/bachelorIcon.png'),
+                  color: Colors.blue,
+                ),
+                text: 'Education',
               ),
             ],
           ),
-          width: double.infinity,
-          height: size.height * 0.12,
-        )
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+          child: Text(
+            'Most Popular',
+            style: TextStyle(color: CustomColor.lightBlue, fontSize: 22),
+          ),
+        ),
+        Expanded(
+            child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                childAspectRatio: 0.8,
+                crossAxisCount: 2,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10),
+            itemBuilder: (context, index) => Card(
+              elevation: 4.5,
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: size.height * 0.15,
+                    decoration: BoxDecoration(
+                      color: CustomColor.lightBlue,
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(15),
+                          topRight: Radius.circular(15)),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Startup Name'),
+                          Text(
+                            '\$1k',
+                            style: TextStyle(color: CustomColor.grey),
+                          )
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            itemCount: 10,
+          ),
+        ))
       ],
     );
   }
@@ -75,7 +140,7 @@ class CataloguePage extends StatelessWidget {
 
 class CategoryItem extends StatelessWidget {
   String text;
-  IconData icon;
+  ImageIcon icon;
   Color color;
   CategoryItem(
       {Key? key, required this.icon, required this.text, required this.color})
@@ -88,17 +153,18 @@ class CategoryItem extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            color: Colors.blue,
-          ),
-          Text(text)
+          icon,
+          Text(
+            text,
+            style: const TextStyle(fontSize: 12),
+          )
         ],
       ),
       height: 75,
       width: 75,
       decoration: BoxDecoration(
-          color: color, borderRadius: BorderRadius.all(Radius.circular(15))),
+          color: color,
+          borderRadius: const BorderRadius.all(Radius.circular(15))),
     );
   }
 }
