@@ -1,14 +1,24 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fyi/commons.dart';
 import 'package:fyi/custom_color.dart';
+import 'package:fyi/models/investor_user.dart';
+import 'package:fyi/services/investor_service.dart';
 import 'package:fyi/ui/general/validation_pending_page.dart';
 import 'package:get/get.dart';
 import 'package:open_filex/open_filex.dart';
 
 class VerificationPage extends StatelessWidget {
-  VerificationPage({super.key});
+  User firebaseUser;
+  String password, email;
+  VerificationPage(
+      {super.key,
+      required this.firebaseUser,
+      required this.password,
+      required this.email});
+  static late Map<String, String> data;
   final _investorNameEditingController = TextEditingController().obs;
   final _datePickerController = TextEditingController().obs;
   final _emailEditingController = TextEditingController().obs;
@@ -181,16 +191,35 @@ class VerificationPage extends StatelessWidget {
               SizedBox(
                 // ignore: sort_child_properties_last
                 child: ElevatedButton(
-                  onPressed: () => isValid()
-                      ? Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ValidationPendingPage(
-                                    text:
-                                        'Your application is on review, Please check again after 48 hours.',
-                                  )),
-                          (route) => false)
-                      : print('belom lengkap ngab'),
+                  onPressed: () async {
+                    if (isValid()) {
+                      final user = InvestorUser(
+                          ktpUrl: ktp.path,
+                          uid: firebaseUser.uid,
+                          profileImage: firebaseUser.photoURL,
+                          name: _investorNameEditingController.value.text,
+                          adress: _adressEditingController.value.text,
+                          dateTime: _datePickerController.value.text,
+                          email: _emailEditingController.value.text,
+                          numberPhone: _numberEditingController.value.text);
+                      bool isSuccess = await InvestorService().addUser(user);
+                      if (isSuccess) {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ValidationPendingPage(
+                                      isStartup: false,
+                                      email: email,
+                                      password: password,
+                                      text:
+                                          'Your application is on review, Please check again after 48 hours.',
+                                    )),
+                            (route) => false);
+                      }
+                    } else {
+                      print('inputan kurang');
+                    }
+                  },
                   child: const Text(
                     'Apply',
                     style: TextStyle(color: Colors.white),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fyi/custom_color.dart';
+import 'package:fyi/services/auth_service.dart';
 import 'package:fyi/ui/investor/verification_page.dart';
 import 'package:fyi/ui/startup/funding_page.dart';
 import 'package:fyi/ui/widgets/signup_form.dart';
+import 'package:fyi/ui/widgets/widget_tree.dart';
 import 'package:get/get.dart';
 
 class SignUpPage extends StatelessWidget {
@@ -11,7 +13,6 @@ class SignUpPage extends StatelessWidget {
   final _nameEditingController = TextEditingController().obs;
   final _emailEditingController = TextEditingController().obs;
   final _passwordEditingController = TextEditingController().obs;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,13 +99,34 @@ class SignUpPage extends StatelessWidget {
                   style: ButtonStyle(
                       shape: MaterialStateProperty.all(RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15)))),
-                  onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => isStartup.value
-                                ? FundingPage()
-                                : VerificationPage()),
-                      ),
+                  onPressed: () async {
+                    try {
+                      final user = await AuthService()
+                          .createUserWithEmailAndPassword(
+                              email: _emailEditingController.value.text,
+                              password: _passwordEditingController.value.text);
+                      WidgetTree.isStartup = isStartup.value;
+                      if (user != null) {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => isStartup.value
+                                  ? FundingPage()
+                                  : VerificationPage(
+                                      firebaseUser: user,
+                                      password:
+                                          _passwordEditingController.value.text,
+                                      email: _emailEditingController.value.text,
+                                    ),
+                            ),
+                            (route) => false);
+                      } else {
+                        print('gagal register');
+                      }
+                    } catch (e) {
+                      print(e.toString());
+                    }
+                  },
                   child: const Text(
                     'Sign Up',
                     style: TextStyle(color: Colors.white),

@@ -1,7 +1,10 @@
 import 'package:custom_navigation_bar/custom_navigation_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fyi/custom_color.dart';
+import 'package:fyi/models/investor_user.dart';
+import 'package:fyi/models/startup_user.dart';
 import 'package:fyi/ui/general/widgets/catalogue_page.dart';
 import 'package:fyi/ui/general/widgets/dashboard_page.dart';
 import 'package:fyi/ui/general/widgets/message_page.dart';
@@ -9,8 +12,11 @@ import 'package:fyi/ui/general/widgets/transaction_page.dart';
 import 'package:get/get.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({super.key});
+  InvestorUser? investorUser;
+  StartupUser? startupUser;
+  HomePage({super.key, this.investorUser, this.startupUser});
   final _index = 0.obs;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

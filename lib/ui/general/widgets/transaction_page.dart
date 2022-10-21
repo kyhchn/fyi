@@ -1,7 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:fyi/custom_color.dart';
 
 class TransactionPage extends StatelessWidget {
@@ -31,9 +28,15 @@ class TransactionPage extends StatelessWidget {
               borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(15),
                   bottomRight: Radius.circular(15))),
-          child: Text(
-            'Transaction History',
-            style: TextStyle(color: CustomColor.lightBlue, fontSize: 25),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Transaction History',
+                style: TextStyle(color: CustomColor.lightBlue, fontSize: 25),
+              ),
+            ],
           ),
         ),
         Expanded(
@@ -45,13 +48,77 @@ class TransactionPage extends StatelessWidget {
                       shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(15))),
                       tileColor: CustomColor.lighterLightBlue.withOpacity(0.2),
-                      leading: const Icon(Icons.arrow_back),
-                      title: Text(
-                        'Let\'s pith deck with our team',
-                        style: TextStyle(color: CustomColor.lightBlue),
+                      leading: const Icon(
+                        Icons.person,
+                        size: 40,
                       ),
-                      subtitle: const Text(
-                          'This is the pitch deck schedule and link video conference, please come on time'),
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Holy cow',
+                            style: TextStyle(color: CustomColor.lightBlue),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 7, vertical: 1),
+                            child: const Text('asas'),
+                            decoration: const BoxDecoration(
+                                color: Colors.green,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(12))),
+                          )
+                        ],
+                      ),
+                      subtitle: Column(
+                        children: [
+                          const Text(
+                              'This is the pitch deck schedule and link video conference, please come on time'),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              ElevatedButton(
+                                  style: ButtonStyle(
+                                      minimumSize:
+                                          MaterialStateProperty.all(Size.zero),
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              CustomColor.lightBlue),
+                                      padding: MaterialStateProperty.all(
+                                          EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 1)),
+                                      shape: MaterialStateProperty.all(
+                                          RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(14))))),
+                                  onPressed: () {},
+                                  child: const Text('Invest')),
+                              SizedBox(
+                                width: size.width * 0.05,
+                              ),
+                              ElevatedButton(
+                                  style: ButtonStyle(
+                                      minimumSize:
+                                          MaterialStateProperty.all(Size.zero),
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              CustomColor.grey),
+                                      padding: MaterialStateProperty.all(
+                                          EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 1)),
+                                      shape: MaterialStateProperty.all(
+                                          RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(14))))),
+                                  onPressed: () {},
+                                  child: const Text(
+                                    'Cancel',
+                                    style: TextStyle(color: Colors.white),
+                                  ))
+                            ],
+                          )
+                        ],
+                      ),
                     ),
                 separatorBuilder: (context, index) => const SizedBox(
                       height: 15,

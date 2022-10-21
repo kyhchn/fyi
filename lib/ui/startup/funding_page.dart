@@ -174,6 +174,9 @@ class FundingPage extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (context) => ValidationPendingPage(
+                                password: 'asdasd',
+                                email: 'aadasd',
+                                isStartup: true,
                                 text:
                                     'Your application is on review, Please check again after 48 hours to pitching with our teams.')),
                         (route) => false);

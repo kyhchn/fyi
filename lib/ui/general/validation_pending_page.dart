@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:fyi/commons.dart';
+import 'package:fyi/models/investor_user.dart';
+import 'package:fyi/models/startup_user.dart';
+import 'package:fyi/services/auth_service.dart';
 import 'package:fyi/ui/general/home_page.dart';
+import 'package:fyi/ui/widgets/widget_tree.dart';
 
 class ValidationPendingPage extends StatelessWidget {
-  String text;
-  ValidationPendingPage({super.key, required this.text});
+  String text, email, password;
+  bool isStartup;
+  ValidationPendingPage(
+      {super.key,
+      required this.text,
+      required this.password,
+      required this.email,
+      required this.isStartup});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,10 +40,17 @@ class ValidationPendingPage extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () => Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomePage()),
-                    (route) => false),
+                onPressed: () async {
+                  WidgetTree.isStartup = isStartup;
+                  await AuthService().signInWithEmailAndPassword(
+                      email: email, password: password);
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HomePage(),
+                      ),
+                      (route) => false);
+                },
                 child: const Text(
                   'Go To Dashboard',
                   style: TextStyle(color: Colors.white, fontSize: 20),
