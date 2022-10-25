@@ -1,22 +1,18 @@
 import 'dart:io';
-
-import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fyi/commons.dart';
 import 'package:fyi/custom_color.dart';
+import 'package:fyi/models/funding.dart';
+import 'package:fyi/services/cloud_storage_service.dart';
+import 'package:fyi/ui/widgets/loading_alert.dart';
+import 'package:open_filex/open_filex.dart';
 
 class StartupDetailPage extends StatelessWidget {
   bool isStartup;
-  File? startupProfile, fundingProposal, businessPlan;
-  File? cashFlow;
+  Funding funding;
   StartupDetailPage(
-      {super.key,
-      required this.isStartup,
-      this.startupProfile,
-      this.businessPlan,
-      this.fundingProposal,
-      this.cashFlow});
+      {super.key, required this.isStartup, required this.funding});
   DateTime? datePicked;
   TimeOfDay? timePicked;
   @override
@@ -28,22 +24,25 @@ class StartupDetailPage extends StatelessWidget {
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 height: size.height * 0.3,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(17),
-                        bottomRight: Radius.circular(17)),
-                    color: CustomColor.darkerLightGrey),
+                  image: DecorationImage(
+                      image: NetworkImage(funding.imageUrl), fit: BoxFit.cover),
+                  borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(17),
+                      bottomRight: Radius.circular(17)),
+                ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    'Startup Name',
-                    style: TextStyle(fontSize: 25),
+                  Text(
+                    funding.startupName,
+                    style: const TextStyle(fontSize: 25),
                   )
                 ],
               ),
@@ -63,7 +62,7 @@ class StartupDetailPage extends StatelessWidget {
                       height: 10,
                     ),
                     Text(
-                      Commons.lorem,
+                      funding.shortDescription,
                       style: TextStyle(color: CustomColor.grey),
                       textAlign: TextAlign.justify,
                     )
@@ -93,10 +92,29 @@ class StartupDetailPage extends StatelessWidget {
                         child: GridView.count(
                           crossAxisCount: 3,
                           children: [
-                            const DocumentButton(),
-                            const DocumentButton(),
-                            const DocumentButton(),
-                            const DocumentButton()
+                            DocumentButton(
+                              documentPath: funding.bussinessPlanUrl,
+                              text: 'Bussiness Plan',
+                            ),
+                            DocumentButton(
+                              documentPath: funding.companyProfileUrl,
+                              text: 'Company Profile',
+                            ),
+                            DocumentButton(
+                                documentPath: funding.fundingProposalUrl,
+                                text: 'Funding Proposal'),
+                            Builder(builder: (context) {
+                              if (funding.cashFlowUrl != null) {
+                                return DocumentButton(
+                                  documentPath: funding.cashFlowUrl!,
+                                  text: 'Cash Flow',
+                                );
+                              }
+                              return const SizedBox(
+                                height: 0,
+                                width: 0,
+                              );
+                            })
                           ],
                         ),
                       )
@@ -104,7 +122,7 @@ class StartupDetailPage extends StatelessWidget {
                   ),
                 ),
               ),
-              isStartup
+              !isStartup
                   ? Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 10),
@@ -235,7 +253,12 @@ class StartupDetailPage extends StatelessWidget {
                     )
             ],
           ),
-          const Icon(Icons.arrow_back),
+          IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+              ))
         ],
       )),
     );
@@ -243,14 +266,23 @@ class StartupDetailPage extends StatelessWidget {
 }
 
 class DocumentButton extends StatelessWidget {
-  const DocumentButton({
-    Key? key,
-  }) : super(key: key);
+  String documentPath;
+  String text;
+  DocumentButton({Key? key, required this.documentPath, required this.text})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: () async {
+        showDialog(
+          context: context,
+          builder: (context) => LoadingAlert(message: "Please wait..."),
+        );
+        File? result = await CloudStorageService().downloadFile(documentPath);
+        Navigator.pop(context);
+        await OpenFilex.open(result!.path);
+      },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -259,7 +291,7 @@ class DocumentButton extends StatelessWidget {
             color: CustomColor.grey,
           ),
           Text(
-            'apalah ini yaaa',
+            text,
             style: TextStyle(color: CustomColor.grey),
           )
         ],

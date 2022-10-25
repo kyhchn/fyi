@@ -1,18 +1,18 @@
 import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fyi/commons.dart';
 import 'package:fyi/custom_color.dart';
-import 'package:fyi/ui/startup/funding_page.dart';
 import 'package:get/get.dart';
 import 'package:open_filex/open_filex.dart';
 
 class FilePickerWidget extends StatelessWidget {
   String nameFile;
-  FilePickerWidget({super.key, required this.nameFile});
+  String examplePath;
+  FilePickerWidget(
+      {super.key, required this.nameFile, required this.examplePath});
   var isPicked = false.obs;
-  File? file = null;
+  File? file;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -46,27 +46,23 @@ class FilePickerWidget extends StatelessWidget {
                       isPicked.value = true;
                     }
                   },
-                  child: Text(
+                  style: Commons.blueButtonStyle,
+                  child: const Text(
                     'Browse',
                     style: TextStyle(color: Colors.white),
-                  ),
-                  style: Commons.blueButtonStyle),
-              SizedBox(
+                  )),
+              const SizedBox(
                 width: 10,
               ),
-              Obx(
-                () => ElevatedButton(
-                    onPressed: isPicked.value
-                        ? () async {
-                            OpenFilex.open(file!.path);
-                          }
-                        : null,
-                    child: Text(
-                      'Example',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    style: Commons.blueButtonStyle),
-              )
+              ElevatedButton(
+                  onPressed: () async {
+                    await OpenFilex.open(examplePath);
+                  },
+                  style: Commons.blueButtonStyle,
+                  child: const Text(
+                    'Example',
+                    style: TextStyle(color: Colors.white),
+                  )),
             ],
           ),
         )

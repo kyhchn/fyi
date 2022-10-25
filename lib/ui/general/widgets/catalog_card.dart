@@ -2,18 +2,26 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fyi/custom_color.dart';
+import 'package:fyi/models/funding.dart';
 import 'package:fyi/ui/general/startup_detail_page.dart';
 
 class CatalogCard extends StatelessWidget {
   Size size;
-  CatalogCard({super.key, required this.size});
+  bool isStartup;
+  Funding funding;
+  CatalogCard(
+      {super.key,
+      required this.size,
+      required this.isStartup,
+      required this.funding});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () => Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => StartupDetailPage(
-          isStartup: true,
+          isStartup: isStartup,
+          funding: funding,
         ),
       )),
       child: Card(
@@ -28,7 +36,8 @@ class CatalogCard extends StatelessWidget {
               width: size.width * 0.38,
               height: size.height * 0.13,
               decoration: BoxDecoration(
-                color: CustomColor.lightBlue,
+                image: DecorationImage(
+                    image: NetworkImage(funding.imageUrl), fit: BoxFit.cover),
                 borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(15),
                     topRight: Radius.circular(15)),
@@ -40,9 +49,9 @@ class CatalogCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Startup Name'),
+                  Text(funding.startupName),
                   Text(
-                    '\$1k',
+                    '\$${funding.totalFunds}',
                     style: TextStyle(color: CustomColor.grey),
                   )
                 ],

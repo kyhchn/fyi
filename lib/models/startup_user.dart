@@ -1,38 +1,47 @@
 class StartupUser {
-  String uid, name, email, numberPhone, adress, profileImage;
-  DateTime dateTime;
-  int? totalInvestment;
+  String uid, name, email, numberPhone, adress;
+  bool isVerified;
+  String? profileImage, instagramLink, linkedinLink, twitterLink, description;
   StartupUser(
       {required this.uid,
-      required this.profileImage,
+      required this.isVerified,
+      this.description,
+      this.twitterLink,
+      this.instagramLink,
+      this.linkedinLink,
+      this.profileImage,
       required this.name,
       required this.adress,
-      required this.dateTime,
       required this.email,
-      required this.numberPhone,
-      this.totalInvestment});
+      required this.numberPhone});
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
     data['uid'] = uid;
     data['name'] = name;
+    data['isVerified'] = isVerified;
     data['profileImage'] = profileImage;
     data['email'] = email;
     data['numberPhone'] = numberPhone;
     data['adress'] = adress;
-    data['dateTime'] = dateTime.microsecondsSinceEpoch;
-    data['totalInvestment'] = totalInvestment;
+    data['description'] = description;
+    data['linkedinLink'] = linkedinLink;
+    data['instagramLink'] = instagramLink;
+    data['twitterLink'] = twitterLink;
     return data;
   }
 
   factory StartupUser.fromJson(Map<String, dynamic> json) {
     return StartupUser(
-        uid: json['uid']!,
+        uid: json['uid'],
+        isVerified: json['isVerified'],
         profileImage: json['profileImage'],
         name: json['name'],
+        description: json['description'],
+        instagramLink: json['instagramLink'],
+        linkedinLink: json['linkedinLink'],
+        twitterLink: json['twitterLink'],
         adress: json['adress'],
-        dateTime: json['dateTime'],
         email: json['email'],
-        numberPhone: json['numberPhone'],
-        totalInvestment: json['totalInvestment'] ?? 0);
+        numberPhone: json['numberPhone']);
   }
 }

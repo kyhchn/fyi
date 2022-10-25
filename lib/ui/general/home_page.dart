@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fyi/custom_color.dart';
 import 'package:fyi/models/investor_user.dart';
 import 'package:fyi/models/startup_user.dart';
+import 'package:fyi/services/investor_service.dart';
+import 'package:fyi/services/startup_service.dart';
 import 'package:fyi/ui/general/widgets/catalogue_page.dart';
 import 'package:fyi/ui/general/widgets/dashboard_page.dart';
 import 'package:fyi/ui/general/widgets/message_page.dart';
@@ -14,16 +17,26 @@ import 'package:get/get.dart';
 class HomePage extends StatelessWidget {
   InvestorUser? investorUser;
   StartupUser? startupUser;
-  HomePage({super.key, this.investorUser, this.startupUser});
+  bool isStartup;
+  User user;
+  HomePage({super.key, required this.isStartup, required this.user});
   final _index = 0.obs;
-
+  late DocumentReference<Map<String, dynamic>> userRef;
   @override
   Widget build(BuildContext context) {
+    if (isStartup) {
+      userRef = StartupService().getUserReference(user.uid);
+    } else {
+      userRef = InvestorService().getUserReference(user.uid);
+    }
     return Scaffold(
         body: Obx(
           () => SafeArea(
             child: _index.value == 0
-                ? DashBoard()
+                ? DashBoard(
+                    isStartup: isStartup,
+                    userRef: userRef,
+                  )
                 : _index.value == 1
                     ? CataloguePage()
                     : _index.value == 2

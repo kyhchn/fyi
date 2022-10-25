@@ -1,32 +1,55 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fyi/commons.dart';
 import 'package:fyi/custom_color.dart';
+import 'package:fyi/models/funding.dart';
+import 'package:fyi/models/startup_user.dart';
+import 'package:fyi/services/funding_service.dart';
+import 'package:fyi/services/startup_service.dart';
+import 'package:fyi/services/cloud_storage_service.dart';
 import 'package:fyi/ui/widgets/file_picker_widget.dart';
 import 'package:fyi/ui/general/validation_pending_page.dart';
+import 'package:fyi/ui/widgets/loading_alert.dart';
 import 'package:get/get.dart';
+import 'package:open_filex/open_filex.dart';
 
 class FundingPage extends StatelessWidget {
-  FundingPage({super.key});
+  User firebaseUser;
+  String email, password;
+  FundingPage(
+      {super.key,
+      required this.firebaseUser,
+      required this.email,
+      required this.password});
   final _startupNameEditingController = TextEditingController().obs;
   final _emailEditingController = TextEditingController().obs;
   final _numberEditingController = TextEditingController().obs;
   final _adressEditingController = TextEditingController().obs;
   final _startupCategoryNameEditingController = TextEditingController().obs;
-  final _websiteNameEditingController = TextEditingController().obs;
   final _totalFundsEditingController = TextEditingController().obs;
   final _dividendDistEditingController = TextEditingController().obs;
+  final _shortDescriptionEditingController = TextEditingController().obs;
+  late File fundingImage;
+  final fundingImageIsPicked = false.obs;
   final mapFilePickerWidget = <String, FilePickerWidget>{
     'Company Profile': FilePickerWidget(
       nameFile: 'Company Profile',
+      examplePath: 'assets/documents/bussinessProfile.pdf',
     ),
     'Business Plan': FilePickerWidget(
       nameFile: 'Business Plan',
+      examplePath: 'assets/documents/bussinessPlan.pdf',
     ),
     'Funding Proposal': FilePickerWidget(
       nameFile: 'Funding Proposal',
+      examplePath: 'assets/documents/fundingfProposal.pdf',
     ),
     'Cash Flow (Optional)': FilePickerWidget(
       nameFile: 'Cash Flow (Optional)',
+      examplePath: 'assets/documents/cashFlow.pdf',
     )
   };
   bool mapIsValid() {
@@ -41,9 +64,9 @@ class FundingPage extends StatelessWidget {
         _numberEditingController.value.text.isNotEmpty &&
         _adressEditingController.value.text.isNotEmpty &&
         _startupCategoryNameEditingController.value.text.isNotEmpty &&
-        _websiteNameEditingController.value.text.isNotEmpty &&
         _totalFundsEditingController.value.text.isNotEmpty &&
         _dividendDistEditingController.value.text.isNotEmpty &&
+        _shortDescriptionEditingController.value.text.isNotEmpty &&
         mapIsValid();
   }
 
@@ -54,11 +77,11 @@ class FundingPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(3),
             child: Container(
               color: CustomColor.grey,
               height: 1,
-            ),
-            preferredSize: const Size.fromHeight(3)),
+            )),
         centerTitle: true,
         title: const Text(
           'Apply for Funding',
@@ -67,10 +90,8 @@ class FundingPage extends StatelessWidget {
         elevation: 0,
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 2),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
               child: Obx(
@@ -109,9 +130,9 @@ class FundingPage extends StatelessWidget {
                             hintText: 'Startup Category',
                             hintStyle: Commons.hintStyle)),
                     TextField(
-                        controller: _websiteNameEditingController.value,
+                        controller: _shortDescriptionEditingController.value,
                         decoration: InputDecoration(
-                            hintText: 'Website / Social Media',
+                            hintText: 'Short Description',
                             hintStyle: Commons.hintStyle))
                   ],
                 ),
@@ -138,6 +159,69 @@ class FundingPage extends StatelessWidget {
                             hintText:
                                 'Dividend distribution frequency per year',
                             hintStyle: Commons.hintStyle)),
+                    const SizedBox(
+                      height: 3,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Funding Image',
+                              style: TextStyle(color: CustomColor.grey),
+                            ),
+                            Icon(
+                              Icons.verified,
+                              color: fundingImageIsPicked.value
+                                  ? Colors.green
+                                  : CustomColor.grey,
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 40,
+                          child: Row(
+                            children: [
+                              ElevatedButton(
+                                  onPressed: () async {
+                                    FilePickerResult? result = await FilePicker
+                                        .platform
+                                        .pickFiles(allowedExtensions: [
+                                      'png',
+                                      'jpg',
+                                      'jpeg'
+                                    ], type: FileType.custom);
+                                    if (result != null) {
+                                      fundingImage =
+                                          File(result.files.single.path!);
+                                      fundingImageIsPicked.value = true;
+                                    }
+                                  },
+                                  style: Commons.blueButtonStyle,
+                                  child: const Text(
+                                    'Browse',
+                                    style: TextStyle(color: Colors.white),
+                                  )),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              ElevatedButton(
+                                  onPressed: fundingImageIsPicked.value
+                                      ? () async {
+                                          OpenFilex.open(fundingImage.path);
+                                        }
+                                      : null,
+                                  style: Commons.blueButtonStyle,
+                                  child: const Text(
+                                    'Preview',
+                                    style: TextStyle(color: Colors.white),
+                                  )),
+                            ],
+                          ),
+                        )
+                      ],
+                    )
                   ],
                 ),
               ),
@@ -167,30 +251,91 @@ class FundingPage extends StatelessWidget {
               ),
             ),
             SizedBox(
+              width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (isValid()) {
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ValidationPendingPage(
-                                password: 'asdasd',
-                                email: 'aadasd',
-                                isStartup: true,
-                                text:
-                                    'Your application is on review, Please check again after 48 hours to pitching with our teams.')),
-                        (route) => false);
-                    return;
+                    showDialog(
+                      context: context,
+                      builder: (context) => LoadingAlert(message: "Uploading"),
+                    );
+                    final companyProfile =
+                        mapFilePickerWidget['Company Profile']!.file!;
+                    final businessPlan =
+                        mapFilePickerWidget['Business Plan']!.file!;
+                    final fundingProposal =
+                        mapFilePickerWidget['Funding Proposal']!.file!;
+                    final cashFlow =
+                        mapFilePickerWidget['Cash Flow (Optional)']!.file;
+                    final companyProfileUpload =
+                        await CloudStorageService(file: companyProfile)
+                            .uploadFile(
+                                "users/startup/${firebaseUser.uid}/documents");
+                    final businessPlanUpload =
+                        await CloudStorageService(file: businessPlan)
+                            .uploadFile(
+                                "users/startup/${firebaseUser.uid}/documents");
+                    final fundingProposalUpload =
+                        await CloudStorageService(file: fundingProposal)
+                            .uploadFile(
+                                "users/startup/${firebaseUser.uid}/documents");
+                    final cashFlowUpload = (cashFlow == null)
+                        ? null
+                        : await CloudStorageService(file: cashFlow).uploadFile(
+                            "users/startup/${firebaseUser.uid}/documents");
+                    final fundingImageUpload =
+                        await CloudStorageService(file: fundingImage)
+                            .uploadImage(
+                                "users/startup/${firebaseUser.uid}/documents");
+                    final funding = Funding(
+                        imageUrl: fundingImageUpload!,
+                        shortDescription:
+                            _shortDescriptionEditingController.value.text,
+                        startupName: _startupNameEditingController.value.text,
+                        dividend: _dividendDistEditingController.value.text,
+                        startupCategory:
+                            _startupCategoryNameEditingController.value.text,
+                        bussinessPlanUrl: businessPlanUpload!,
+                        companyProfileUrl: companyProfileUpload!,
+                        fundingProposalUrl: fundingProposalUpload!,
+                        cashFlowUrl: cashFlowUpload,
+                        startupUid: firebaseUser.uid,
+                        totalFunds: _totalFundsEditingController.value.text);
+
+                    final user = StartupUser(
+                        isVerified: false,
+                        uid: firebaseUser.uid,
+                        profileImage: firebaseUser.photoURL,
+                        name: _startupNameEditingController.value.text,
+                        adress: _adressEditingController.value.text,
+                        email: email,
+                        numberPhone: _numberEditingController.value.text);
+                    final isSuccessAddUser =
+                        await StartupService().addUser(user);
+                    final isSuccessAddFunding =
+                        await FundingService().addFunding(funding);
+                    Navigator.pop(context);
+                    if (isSuccessAddFunding && isSuccessAddUser) {
+                      // ignore: use_build_context_synchronously
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ValidationPendingPage(
+                                  isStartup: true,
+                                  text:
+                                      'Your application is on review, Please check again after 48 hours to pitching with our teams.')),
+                          (route) => false);
+                    } else {
+                      print('add user gagal');
+                    }
                   }
-                  print('jancok ono seng kurang tod');
                 },
-                child: Text(
+                style: Commons.blueButtonStyle,
+                child: const Text(
                   'Apply',
                   style: TextStyle(color: Colors.white),
                 ),
-                style: Commons.blueButtonStyle,
               ),
-              width: double.infinity,
             ),
           ],
         ),

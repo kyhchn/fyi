@@ -7,6 +7,8 @@ import 'package:fyi/custom_color.dart';
 import 'package:fyi/models/investor_user.dart';
 import 'package:fyi/services/investor_service.dart';
 import 'package:fyi/ui/general/validation_pending_page.dart';
+import 'package:fyi/services/cloud_storage_service.dart';
+import 'package:fyi/ui/widgets/loading_alert.dart';
 import 'package:get/get.dart';
 import 'package:open_filex/open_filex.dart';
 
@@ -192,9 +194,20 @@ class VerificationPage extends StatelessWidget {
                 // ignore: sort_child_properties_last
                 child: ElevatedButton(
                   onPressed: () async {
+                    FocusScope.of(context).unfocus();
                     if (isValid()) {
+                      showDialog(
+                        context: context,
+                        builder: (context) =>
+                            LoadingAlert(message: 'Signing up...'),
+                      );
+                      final ktpUpload = await CloudStorageService(file: ktp)
+                          .uploadFile(
+                              "users/investor/${firebaseUser.uid}/documents");
+                      print(ktpUpload);
                       final user = InvestorUser(
-                          ktpUrl: ktp.path,
+                          isVerified: false,
+                          ktpUrl: ktpUpload!,
                           uid: firebaseUser.uid,
                           profileImage: firebaseUser.photoURL,
                           name: _investorNameEditingController.value.text,
@@ -202,15 +215,16 @@ class VerificationPage extends StatelessWidget {
                           dateTime: _datePickerController.value.text,
                           email: _emailEditingController.value.text,
                           numberPhone: _numberEditingController.value.text);
-                      bool isSuccess = await InvestorService().addUser(user);
+                      bool isSuccess =
+                          await InvestorService().addUser(user, false);
+                      Navigator.pop(context);
                       if (isSuccess) {
+                        // ignore: use_build_context_synchronously
                         Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => ValidationPendingPage(
                                       isStartup: false,
-                                      email: email,
-                                      password: password,
                                       text:
                                           'Your application is on review, Please check again after 48 hours.',
                                     )),

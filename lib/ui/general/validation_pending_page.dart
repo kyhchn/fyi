@@ -1,20 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fyi/commons.dart';
-import 'package:fyi/models/investor_user.dart';
-import 'package:fyi/models/startup_user.dart';
-import 'package:fyi/services/auth_service.dart';
-import 'package:fyi/ui/general/home_page.dart';
 import 'package:fyi/ui/widgets/widget_tree.dart';
 
 class ValidationPendingPage extends StatelessWidget {
-  String text, email, password;
+  String text;
   bool isStartup;
   ValidationPendingPage(
-      {super.key,
-      required this.text,
-      required this.password,
-      required this.email,
-      required this.isStartup});
+      {super.key, required this.text, required this.isStartup});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,19 +32,33 @@ class ValidationPendingPage extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () async {
+                onPressed: () {
                   WidgetTree.isStartup = isStartup;
-                  await AuthService().signInWithEmailAndPassword(
-                      email: email, password: password);
+                  // final data = await AuthService().signInWithEmailAndPassword(
+                  //     email: email, password: password);
+                  // if (data != null) {
+                  //   // ignore: use_build_context_synchronously
+                  //   Navigator.pushAndRemoveUntil(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //         builder: (context) => HomePage(
+                  //           isStartup: isStartup,
+                  //           user: data,
+                  //         ),
+                  //       ),
+                  //       (route) => false);
+                  // } else {
+                  //   ScaffoldMessenger.of(context).showSnackBar(
+                  //       const SnackBar(content: Text('gagal login')));
+                  // }
                   Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => HomePage(),
-                      ),
+                      MaterialPageRoute(builder: (context) => WidgetTree()),
                       (route) => false);
                 },
+                // ignore: sort_child_properties_last
                 child: const Text(
-                  'Go To Dashboard',
+                  'Go To Login Page',
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
                 style: Commons.blueButtonStyle,
