@@ -28,7 +28,6 @@ class FundingPage extends StatelessWidget {
   final _emailEditingController = TextEditingController().obs;
   final _numberEditingController = TextEditingController().obs;
   final _adressEditingController = TextEditingController().obs;
-  final _startupCategoryNameEditingController = TextEditingController().obs;
   final _totalFundsEditingController = TextEditingController().obs;
   final _dividendDistEditingController = TextEditingController().obs;
   final _shortDescriptionEditingController = TextEditingController().obs;
@@ -63,13 +62,13 @@ class FundingPage extends StatelessWidget {
         _emailEditingController.value.text.isNotEmpty &&
         _numberEditingController.value.text.isNotEmpty &&
         _adressEditingController.value.text.isNotEmpty &&
-        _startupCategoryNameEditingController.value.text.isNotEmpty &&
         _totalFundsEditingController.value.text.isNotEmpty &&
         _dividendDistEditingController.value.text.isNotEmpty &&
         _shortDescriptionEditingController.value.text.isNotEmpty &&
         mapIsValid();
   }
 
+  final dropDownValue = "Technology".obs;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,7 +90,7 @@ class FundingPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 2),
-        child: Column(
+        child: ListView(
           children: [
             SizedBox(
               child: Obx(
@@ -123,17 +122,33 @@ class FundingPage extends StatelessWidget {
                     TextField(
                         controller: _adressEditingController.value,
                         decoration: InputDecoration(
-                            hintText: 'Adress', hintStyle: Commons.hintStyle)),
-                    TextField(
-                        controller: _startupCategoryNameEditingController.value,
-                        decoration: InputDecoration(
-                            hintText: 'Startup Category',
-                            hintStyle: Commons.hintStyle)),
+                            hintText: 'Address', hintStyle: Commons.hintStyle)),
                     TextField(
                         controller: _shortDescriptionEditingController.value,
                         decoration: InputDecoration(
                             hintText: 'Short Description',
-                            hintStyle: Commons.hintStyle))
+                            hintStyle: Commons.hintStyle)),
+                    Text(
+                      'Company Type',
+                      style:
+                          TextStyle(color: CustomColor.lightBlue, fontSize: 20),
+                    ),
+                    DropdownButton(
+                      value: dropDownValue.value,
+                      elevation: 2,
+                      underline: Container(
+                        height: 1,
+                        color: CustomColor.grey,
+                      ),
+                      items: ['Technology', 'Finance', 'Health', 'Education']
+                          .map((element) {
+                        return DropdownMenuItem(
+                            value: element, child: Text(element));
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        dropDownValue.value = newValue!;
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -293,8 +308,7 @@ class FundingPage extends StatelessWidget {
                             _shortDescriptionEditingController.value.text,
                         startupName: _startupNameEditingController.value.text,
                         dividend: _dividendDistEditingController.value.text,
-                        startupCategory:
-                            _startupCategoryNameEditingController.value.text,
+                        startupCategory: dropDownValue.value,
                         bussinessPlanUrl: businessPlanUpload!,
                         companyProfileUrl: companyProfileUpload!,
                         fundingProposalUrl: fundingProposalUpload!,

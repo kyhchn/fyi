@@ -28,4 +28,15 @@ class FundingService {
   Stream<QuerySnapshot<Map<String, dynamic>>> getNormalfundingStream() {
     return firestoreRef.snapshots();
   }
+
+  CollectionReference<Map<String, dynamic>> getCollectionReference() {
+    return firestoreRef;
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> getFundingCollectionByCategory(
+      String category) async {
+    return getCollectionReference()
+        .where('startupCategory', isEqualTo: category)
+        .get();
+  }
 }

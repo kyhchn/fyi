@@ -1,9 +1,6 @@
-import 'dart:convert';
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fyi/models/investor_user.dart';
-import 'package:fyi/services/cloud_storage_service.dart';
 
 class InvestorService {
   static CollectionReference<Map<String, dynamic>> firestore =
@@ -22,12 +19,13 @@ class InvestorService {
   }
 
   Future<InvestorUser?> getUser(String uid) async {
+    InvestorUser? investorUser;
     await firestore.doc(uid).get().then((value) {
       if (value.exists) {
-        return InvestorUser.fromJson(value.data()!);
+        investorUser = InvestorUser.fromJson(value.data()!);
       }
     });
-    return null;
+    return investorUser;
   }
 
   Future<void> updateUser(InvestorUser investorUser) async {

@@ -34,14 +34,21 @@ class HomePage extends StatelessWidget {
           () => SafeArea(
             child: _index.value == 0
                 ? DashBoard(
+                    user: user,
                     isStartup: isStartup,
                     userRef: userRef,
                   )
                 : _index.value == 1
-                    ? CataloguePage()
+                    ? CataloguePage(
+                        user: user,
+                        isStartup: isStartup,
+                      )
                     : _index.value == 2
                         ? MessagePage()
-                        : TransactionPage(),
+                        : TransactionPage(
+                            isStartup: isStartup,
+                            uid: user.uid,
+                          ),
           ),
         ),
         extendBody: true,

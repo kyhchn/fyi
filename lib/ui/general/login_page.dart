@@ -4,12 +4,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fyi/custom_color.dart';
 import 'package:fyi/services/auth_service.dart';
 import 'package:fyi/ui/general/signup_page.dart';
+import 'package:fyi/ui/widgets/widget_tree.dart';
 import 'package:get/get.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
   final _emailEditingController = TextEditingController().obs;
   final _passwordEditingController = TextEditingController().obs;
+  final isStartup = false.obs;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,12 +28,42 @@ class LoginPage extends StatelessWidget {
               height: MediaQuery.of(context).size.height * 0.35,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: const [
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
                 Text(
                   'Login',
                   style: TextStyle(color: Colors.black, fontSize: 30),
                 ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  child: Obx(
+                    () => Row(
+                      children: [
+                        TextButton(
+                            onPressed: () => isStartup.value = false,
+                            child: Text(
+                              'Investor',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: isStartup.value
+                                      ? CustomColor.grey
+                                      : CustomColor.lightBlue),
+                            )),
+                        const Text('/'),
+                        TextButton(
+                            onPressed: () => isStartup.value = true,
+                            child: Text(
+                              'Startup',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: isStartup.value
+                                      ? CustomColor.lightBlue
+                                      : CustomColor.grey),
+                            )),
+                      ],
+                    ),
+                  ),
+                )
               ],
             ),
             Obx(
@@ -74,6 +106,7 @@ class LoginPage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(15)))),
                     onPressed: () async {
                       User? user;
+                      WidgetTree.isStartup = isStartup.value;
                       try {
                         user = await AuthService().signInWithEmailAndPassword(
                             email: _emailEditingController.value.text,

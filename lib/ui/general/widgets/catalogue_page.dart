@@ -1,9 +1,21 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fyi/custom_color.dart';
+import 'package:fyi/models/funding.dart';
+import 'package:fyi/models/investor_user.dart';
+import 'package:fyi/services/funding_service.dart';
+import 'package:fyi/ui/general/category_detail_page.dart';
+import 'package:fyi/ui/general/startup_detail_page.dart';
 
 class CataloguePage extends StatelessWidget {
-  const CataloguePage({super.key});
-
+  InvestorUser? investorUser;
+  User user;
+  CataloguePage(
+      {super.key,
+      required this.isStartup,
+      this.investorUser,
+      required this.user});
+  bool isStartup;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -46,6 +58,8 @@ class CataloguePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               CategoryItem(
+                isStartup: isStartup,
+                user: user,
                 color: CustomColor.toscaBlue,
                 icon: const ImageIcon(
                   AssetImage('assets/icons/computerIcon.png'),
@@ -54,18 +68,24 @@ class CataloguePage extends StatelessWidget {
                 text: 'Technology',
               ),
               CategoryItem(
+                isStartup: isStartup,
+                user: user,
                 color: CustomColor.lightGrey,
                 icon: const ImageIcon(AssetImage('assets/icons/dollarIcon.png'),
                     color: Colors.blue),
                 text: 'Finance',
               ),
               CategoryItem(
+                isStartup: isStartup,
+                user: user,
                 color: CustomColor.pink,
                 icon: const ImageIcon(AssetImage('assets/icons/healthIcon.png'),
                     color: Colors.blue),
                 text: 'Health',
               ),
               CategoryItem(
+                isStartup: isStartup,
+                user: user,
                 color: CustomColor.lightYellow,
                 icon: const ImageIcon(
                   AssetImage('assets/icons/bachelorIcon.png'),
@@ -83,56 +103,82 @@ class CataloguePage extends StatelessWidget {
             style: TextStyle(color: CustomColor.lightBlue, fontSize: 22),
           ),
         ),
-        Expanded(
-            child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                childAspectRatio: 0.8,
-                crossAxisCount: 2,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10),
-            itemBuilder: (context, index) => Card(
-              elevation: 4.5,
-              shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(15))),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: double.infinity,
-                    height: size.height * 0.15,
-                    decoration: BoxDecoration(
-                      color: CustomColor.lightBlue,
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(15),
-                          topRight: Radius.circular(15)),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 10),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Startup Name'),
-                          Text(
-                            '\$1k',
-                            style: TextStyle(color: CustomColor.grey),
-                          )
-                        ],
+        StreamBuilder(
+            stream: FundingService().getCollectionReference().snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List<Funding> data = [];
+                for (var element in snapshot.data!.docs) {
+                  data.add(Funding.fromJson(element.data()));
+                }
+                return Expanded(
+                    child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            childAspectRatio: 0.8,
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10),
+                    itemBuilder: (context, index) => GestureDetector(
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => StartupDetailPage(
+                                user: user,
+                                funding: data[index],
+                                isStartup: isStartup),
+                          )),
+                      child: Card(
+                        elevation: 4.5,
+                        shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(15))),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              height: size.height * 0.15,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: NetworkImage(data[index].imageUrl)),
+                                borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(15),
+                                    topRight: Radius.circular(15)),
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 10),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(data[index].startupName),
+                                    Text(
+                                      '\$${data[index].totalFunds}',
+                                      style: TextStyle(color: CustomColor.grey),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                  )
-                ],
-              ),
-            ),
-            itemCount: 10,
-          ),
-        ))
+                    itemCount: data.length,
+                  ),
+                ));
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            })
       ],
     );
   }
@@ -142,29 +188,48 @@ class CategoryItem extends StatelessWidget {
   String text;
   ImageIcon icon;
   Color color;
+  bool isStartup;
+  User user;
+  InvestorUser? investorUser;
   CategoryItem(
-      {Key? key, required this.icon, required this.text, required this.color})
+      {Key? key,
+      required this.icon,
+      required this.user,
+      required this.text,
+      this.investorUser,
+      required this.color,
+      required this.isStartup})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          icon,
-          Text(
-            text,
-            style: const TextStyle(fontSize: 12),
-          )
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => CategoryDetailPage(
+          user: user,
+          investorUser: investorUser,
+          category: text,
+          isStartup: isStartup,
+        ),
+      )),
+      child: Container(
+        height: 75,
+        width: 75,
+        decoration: BoxDecoration(
+            color: color,
+            borderRadius: const BorderRadius.all(Radius.circular(15))),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            icon,
+            Text(
+              text,
+              style: const TextStyle(fontSize: 12),
+            )
+          ],
+        ),
       ),
-      height: 75,
-      width: 75,
-      decoration: BoxDecoration(
-          color: color,
-          borderRadius: const BorderRadius.all(Radius.circular(15))),
     );
   }
 }

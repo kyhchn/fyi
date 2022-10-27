@@ -23,14 +23,15 @@ class StartupService {
   }
 
   Future<StartupUser?> getUser(String uid) async {
+    StartupUser? ret;
     final data = await firestore.doc(uid).get().then((value) {
       if (value.exists) {
-        return StartupUser.fromJson(value.data()!);
+        ret = StartupUser.fromJson(value.data()!);
       } else {
-        return null;
+        ret = null;
       }
-    }).catchError((error) => print(error.toString()));
-    return data;
+    });
+    return ret;
   }
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getUserStream(String uid) {

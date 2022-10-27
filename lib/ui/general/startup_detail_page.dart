@@ -1,20 +1,35 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fyi/commons.dart';
 import 'package:fyi/custom_color.dart';
 import 'package:fyi/models/funding.dart';
+import 'package:fyi/models/investor_user.dart';
 import 'package:fyi/services/cloud_storage_service.dart';
+import 'package:fyi/services/investor_service.dart';
+import 'package:fyi/services/transaction_service.dart';
 import 'package:fyi/ui/widgets/loading_alert.dart';
 import 'package:open_filex/open_filex.dart';
 
 class StartupDetailPage extends StatelessWidget {
   bool isStartup;
   Funding funding;
+  User user;
   StartupDetailPage(
-      {super.key, required this.isStartup, required this.funding});
+      {super.key,
+      required this.isStartup,
+      required this.funding,
+      required this.user});
   DateTime? datePicked;
   TimeOfDay? timePicked;
+  String getDate(DateTime dateTime) {
+    return "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+  }
+
+  String getTime(TimeOfDay time) {
+    return "${time.hour}:${time.minute}";
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -189,7 +204,7 @@ class StartupDetailPage extends StatelessWidget {
                                                   CrossAxisAlignment.center,
                                               children: [
                                                 Text(
-                                                  'Your pitch deck will be held on ${datePicked.toString()} at ${timePicked.toString()} are you sure',
+                                                  'Your pitch deck will be held on ${getDate(datePicked)} at ${getTime(timePicked)} are you sure??',
                                                   textAlign: TextAlign.center,
                                                 ),
                                                 const SizedBox(
@@ -210,7 +225,10 @@ class StartupDetailPage extends StatelessWidget {
                                                                 MaterialStateProperty
                                                                     .all(CustomColor
                                                                         .lightBlue)),
-                                                        onPressed: () {},
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
                                                         child: const Text(
                                                             'Reschedule')),
                                                     const SizedBox(
@@ -227,7 +245,28 @@ class StartupDetailPage extends StatelessWidget {
                                                                 MaterialStateProperty
                                                                     .all(CustomColor
                                                                         .lightBlue)),
-                                                        onPressed: () {
+                                                        onPressed: () async {
+                                                          showDialog(
+                                                            context: context,
+                                                            builder: (context) =>
+                                                                LoadingAlert(
+                                                                    message:
+                                                                        'Loading...'),
+                                                          );
+                                                          InvestorUser?
+                                                              investorUser =
+                                                              await InvestorService()
+                                                                  .getUser(
+                                                                      user.uid);
+                                                          await TransactionService()
+                                                              .addTransaction(
+                                                                  datePicked,
+                                                                  timePicked,
+                                                                  funding
+                                                                      .startupName,
+                                                                  funding
+                                                                      .startupUid,
+                                                                  investorUser!);
                                                           Navigator.pop(
                                                               context);
                                                         },

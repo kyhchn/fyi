@@ -1,8 +1,6 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fyi/login_tree.dart';
 import 'package:fyi/services/auth_service.dart';
-import 'package:fyi/services/startup_service.dart';
 import 'package:fyi/ui/general/home_page.dart';
 import 'package:fyi/ui/general/login_page.dart';
 
@@ -20,7 +18,8 @@ class _WidgetTreeState extends State<WidgetTree> {
       stream: AuthService().authStateChanges,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return LoginTree(user: snapshot.data!);
+          return HomePage(
+              isStartup: WidgetTree.isStartup, user: snapshot.data!);
         }
         return LoginPage();
       },

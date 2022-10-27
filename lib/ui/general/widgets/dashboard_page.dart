@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fyi/custom_color.dart';
@@ -17,9 +18,11 @@ class DashBoard extends StatelessWidget {
   InvestorUser? investorUser;
   StartupUser? startupUser;
   bool isStartup;
+  User user;
   DashBoard(
       {super.key,
       this.investorUser,
+      required this.user,
       required this.userRef,
       this.startupUser,
       required this.isStartup});
@@ -167,6 +170,8 @@ class DashBoard extends StatelessWidget {
                                 scrollDirection: Axis.horizontal,
                                 itemCount: data.length,
                                 itemBuilder: (context, index) => CatalogCard(
+                                  user: user,
+                                  investorUser: investorUser,
                                   size: size,
                                   isStartup: isStartup,
                                   funding: data[index],
@@ -201,8 +206,10 @@ class DashBoard extends StatelessWidget {
                                 scrollDirection: Axis.horizontal,
                                 itemCount: data.length,
                                 itemBuilder: (context, index) => CatalogCard(
+                                  user: user,
                                   size: size,
                                   isStartup: isStartup,
+                                  investorUser: investorUser,
                                   funding: data[index],
                                 ),
                                 separatorBuilder: (context, index) =>

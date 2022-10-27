@@ -1,18 +1,24 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fyi/custom_color.dart';
 import 'package:fyi/models/funding.dart';
+import 'package:fyi/models/investor_user.dart';
 import 'package:fyi/ui/general/startup_detail_page.dart';
 
 class CatalogCard extends StatelessWidget {
+  User user;
   Size size;
   bool isStartup;
   Funding funding;
+  InvestorUser? investorUser;
   CatalogCard(
       {super.key,
       required this.size,
       required this.isStartup,
+      required this.user,
+      this.investorUser,
       required this.funding});
 
   @override
@@ -20,6 +26,7 @@ class CatalogCard extends StatelessWidget {
     return InkWell(
       onTap: () => Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => StartupDetailPage(
+          user: user,
           isStartup: isStartup,
           funding: funding,
         ),
