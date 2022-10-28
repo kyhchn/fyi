@@ -17,7 +17,7 @@ class TransactionModel {
     data['startupName'] = startupName;
     data['investorName'] = investorName;
     data['message'] = message;
-    data['startupUid'] = startupUid;
+    data['investorUid'] = investorUid;
     data['status'] = status;
     data['combinedUid'] = combinedUid;
     return data;

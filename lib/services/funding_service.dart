@@ -16,13 +16,14 @@ class FundingService {
   }
 
   Future<Funding?> getFunding(String uid) async {
+    Funding? funding;
     await firestoreRef.doc(uid).get().then((value) {
       if (value.exists) {
-        return Funding.fromJson(value.data()!);
+        funding = Funding.fromJson(value.data()!);
       }
       return null;
     });
-    return null;
+    return funding;
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getNormalfundingStream() {

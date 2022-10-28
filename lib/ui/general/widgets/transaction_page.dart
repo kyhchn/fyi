@@ -113,73 +113,79 @@ class TransactionPage extends StatelessWidget {
         ],
       ),
       subtitle: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(transactionModel.message),
           transactionModel.status == 'Confirmation' && !isStartup
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    ElevatedButton(
-                        style: ButtonStyle(
-                            minimumSize: MaterialStateProperty.all(Size.zero),
-                            backgroundColor: MaterialStateProperty.all(
-                                CustomColor.lightBlue),
-                            padding: MaterialStateProperty.all(
-                                const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 1)),
-                            shape: MaterialStateProperty.all(
-                                const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(14))))),
-                        onPressed: () async {
-                          showDialog(
-                            context: context,
-                            builder: (context) =>
-                                LoadingAlert(message: 'Loading...'),
-                          );
-                          await TransactionService()
-                              .updateStatus("Success", transactionModel);
-                          InvestorUser? investorUser =
-                              await InvestorService().getUser(uid);
-                          int totalInvest = investorUser!.totalInvestment!;
-                          Funding? funding = await FundingService()
-                              .getFunding(transactionModel.startupUid);
-                          totalInvest += funding!.totalFunds as int;
-                          investorUser.totalInvestment = totalInvest;
-                          await InvestorService().updateUser(investorUser);
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Invest')),
-                    SizedBox(
-                      width: size.width * 0.05,
-                    ),
-                    ElevatedButton(
-                        style: ButtonStyle(
-                            minimumSize: MaterialStateProperty.all(Size.zero),
-                            backgroundColor:
-                                MaterialStateProperty.all(CustomColor.grey),
-                            padding: MaterialStateProperty.all(
-                                const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 1)),
-                            shape: MaterialStateProperty.all(
-                                const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(14))))),
-                        onPressed: () async {
-                          showDialog(
-                            context: context,
-                            builder: (context) =>
-                                LoadingAlert(message: 'Loading...'),
-                          );
-                          await TransactionService()
-                              .updateStatus("Failed", transactionModel);
-                          Navigator.pop(context);
-                        },
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(color: Colors.white),
-                        ))
-                  ],
+              ? Container(
+                  width: double.infinity,
+                  height: 40,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                          style: ButtonStyle(
+                              minimumSize: MaterialStateProperty.all(Size.zero),
+                              backgroundColor: MaterialStateProperty.all(
+                                  CustomColor.lightBlue),
+                              padding: MaterialStateProperty.all(
+                                  const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 1)),
+                              shape: MaterialStateProperty.all(
+                                  const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(14))))),
+                          onPressed: () async {
+                            showDialog(
+                              context: context,
+                              builder: (context) =>
+                                  LoadingAlert(message: 'Loading...'),
+                            );
+                            await TransactionService()
+                                .updateStatus("Success", transactionModel);
+                            InvestorUser? investorUser =
+                                await InvestorService().getUser(uid);
+                            int totalInvest = investorUser!.totalInvestment!;
+                            Funding? funding = await FundingService()
+                                .getFunding(transactionModel.startupUid);
+                            totalInvest += int.parse(funding!.totalFunds);
+                            investorUser.totalInvestment = totalInvest;
+                            await InvestorService().updateUser(investorUser);
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Invest')),
+                      SizedBox(
+                        width: size.width * 0.05,
+                      ),
+                      ElevatedButton(
+                          style: ButtonStyle(
+                              minimumSize: MaterialStateProperty.all(Size.zero),
+                              backgroundColor:
+                                  MaterialStateProperty.all(CustomColor.grey),
+                              padding: MaterialStateProperty.all(
+                                  const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 1)),
+                              shape: MaterialStateProperty.all(
+                                  const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(14))))),
+                          onPressed: () async {
+                            showDialog(
+                              context: context,
+                              builder: (context) =>
+                                  LoadingAlert(message: 'Loading...'),
+                            );
+                            await TransactionService()
+                                .updateStatus("Failed", transactionModel);
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(color: Colors.white),
+                          ))
+                    ],
+                  ),
                 )
               : const SizedBox(
                   height: 0,
